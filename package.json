@@ -1,0 +1,13 @@
+{
+  "author": "",
+  "name": "Monitor",
+  "version": "0.0.0",
+  "engines": {
+    "node": "~0.6.15"
+  },
+  "dependencies": {
+    "socket.io": "~0.9.6",
+    "send": "0.0.4"
+  },
+  "devDependencies": {}
+}

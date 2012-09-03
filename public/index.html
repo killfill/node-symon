@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="smoothie.js"></script>
+	<link rel="stylesheet" href="style.css" type="text/css">
+
+	<script>
+	  
+	  $ = function(x) {
+	  	return document.querySelector(x);
+	  };
+
+    function init() {
+
+      var smoothie = new SmoothieChart({
+          //millisPerPixel: 20*5,
+          fps: 20, 
+          maxValue: 100,
+          grid: { 
+              strokeStyle: '#555',
+              //fillStyle:'rgba(0,0,0,0.1)', 
+              lineWidth: .1, 
+              millisPerLine: 1000, 
+              verticalSections: 4 
+          }
+      });
+
+      smoothie.streamTo($('#cpu'), 1000);
+
+      var dataIndex = {
+        user:   {pos: 0, strokeStyle: 'rgba(255, 0, 0, 1)'  , fillStyle: 'rgba(255, 0, 0, 0.1)'},
+        nice:   {pos: 1, strokeStyle: 'rgba(0, 255, 0, 1)'  , fillStyle: 'rgba(0, 255, 0, 0.1)'},
+        system: {pos: 2, strokeStyle: 'rgba(0, 0, 255, 1)'  , fillStyle: 'rgba(0, 0, 255, 0.1)'},
+        interr: {pos: 3, strokeStyle: 'rgba(255, 255, 0, 1)', fillStyle: 'rgba(255, 255, 0, 0.1)'}
+      };
+
+      setInterval(function() {
+        var v = Math.random()*100;
+        console.log(v);
+        dataIndex.user.serie.append(new Date().getTime(), v);
+      }, 500);
+
+      Object.keys(dataIndex).forEach(function(k) {
+        var v = dataIndex[k];
+        v.serie = new TimeSeries();
+        smoothie.addTimeSeries(v.serie, {strokeStyle: v.strokeStyle, fillStyle: v.fillStyle, lineWidth: 2});
+      })
+
+      var socket = io.connect();
+      
+      socket.on('symon', function (data) {
+
+        Object.keys(dataIndex).forEach(function(k) {
+          var v = dataIndex[k];
+          v.serie.append(data.cpu.timestamp, data.cpu[0][v.pos]);
+        })
+
+      });
+
+      socket.on('connect', function() {
+        $('#globe').src = 'img/online.png';
+      })
+
+      socket.on('disconnect', function() {
+        $('#globe').src = 'img/offline.png';
+      })
+
+    }
+
+	</script>
+</head>
+
+<body onload='init()'>
+
+	<header class='status dark'>
+		<h1>Monitor</h1>
+		<img src='img/offline.png' id='globe' />
+	</header>
+
+  <section class='monitor'>
+    <table>
+      <tr>
+        <td>CPU</td>
+        <td><canvas id="cpu" width="800" height="100"></canvas></td>
+      </tr>
+      <tr>
+        <td>MEM</td>
+        <td><canvas id="mem" width="800" height="100"></canvas></td>
+      </tr>
+    </table>
+ 
+  </section>
+</body>
+
+</html>

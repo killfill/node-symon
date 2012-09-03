@@ -1,0 +1,29 @@
+* { 
+    margin: 0;
+    padding: 0;
+}
+
+ body {
+    font-family: 'Gill Sans', 'Liberation Sans', FreeSans, Calibri, Tahoma, sans-serif;
+    font-size: 17px;
+    font-weight: 100;
+    background-image: url(img/bg.png);
+}
+
+header h1 {
+	background-color: #666;
+	text-align: center;
+	color: orange;
+	text-shadow: 2px 2px 2px #000;
+}
+
+header img {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	width: 64px;
+}
+
+monitor {
+    padding: 5px;
+};
